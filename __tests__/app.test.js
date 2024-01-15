@@ -6,7 +6,6 @@ afterAll(() => {
   return db.end();
 });
 
-
 // 1. GET /api/topics
 
 describe("GET /api/topics", () => {
@@ -21,5 +20,22 @@ describe("GET /api/topics", () => {
           expect(typeof topic.description).toBe("string");
         });
       });
-    });
+  });
+});
+
+// 2. GET /api
+
+describe("GET /api", () => {
+  test("1. Returns the endpoints.json object describing all the available endpoints on your API", () => {
+    return request(app)
+      .get("/api")
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        Object.keys(response.body).forEach((endpoint) => {
+          expect(response.body[endpoint]).toHaveProperty("description", expect.any(String));
+          expect(response.body[endpoint]).toHaveProperty("queries", expect.any(Array));
+          expect(response.body[endpoint]).toHaveProperty("exampleResponse", expect.any(Object));
+        });
+      });
+  });
 });
