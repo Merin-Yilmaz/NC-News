@@ -47,34 +47,33 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        console.log(article);
-        expect(article).toEqual( {
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            author: "butter_bridge",
-            body: "I find this existence challenging",
-            created_at: "2020-07-09T20:11:00.000Z",
-            votes: 100,
-            article_img_url:
-              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          },)
+        expect(article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
+      });
   });
-  test('2. GET: 404 responds with an error message when given a non-existent article ID', () => {
+  test("2. GET: 404 responds with an error message when given a non-existent article ID", () => {
     return request(app)
-      .get('/api/articles/888')
+      .get("/api/articles/888")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No article found");
       });
   });
-  test('2. GET: 400 responds with an error message when given a non numeric ID', () => {
+  test("2. GET: 400 responds with an error message when given a non numeric ID", () => {
     return request(app)
-      .get('/api/articles/banana')
+      .get("/api/articles/banana")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
       });
   });
-})
+});
