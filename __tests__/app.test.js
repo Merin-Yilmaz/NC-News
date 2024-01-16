@@ -53,7 +53,7 @@ describe("GET /api/articles/:article_id", () => {
           topic: "mitch",
           author: "butter_bridge",
           body: "I find this existence challenging",
-          created_at: '2020-07-09T20:11:00.000Z',
+          created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -87,7 +87,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(5);
+        expect(articles).toHaveLength(13);
         body.articles.forEach((article) => {
           expect(article).toHaveProperty("article_id", expect.any(Number));
           expect(article).toHaveProperty("title", expect.any(String));
@@ -96,7 +96,7 @@ describe("GET /api/articles", () => {
           expect(article).toHaveProperty("created_at", expect.any(String));
           expect(article).toHaveProperty("votes", expect.any(Number));
           expect(article).toHaveProperty("article_img_url", expect.any(String));
-          expect(article).toHaveProperty("comment_count", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(Number));
         });
       });
   });
@@ -116,6 +116,35 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+// 5. GET /api/articles/:article_id/comments
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("1. GET: 200 returns an array of comments for the given article_id with the correct properties", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(11);
+        response.body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id", expect.any(Number));
+          expect(comment).toHaveProperty("votes", expect.any(Number));
+          expect(comment).toHaveProperty("created_at", expect.any(String));
+          expect(comment).toHaveProperty("author", expect.any(String));
+          expect(comment).toHaveProperty("body", expect.any(String));
+          expect(comment).toHaveProperty("article_id", expect.any(Number));
+        });
+      });
+  });
+  test("2. GET: 200 comments should be sorted by date in ascending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSortedBy("created_at", { ascending: true });
       });
   });
 });

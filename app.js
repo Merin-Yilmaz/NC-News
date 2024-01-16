@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs/promises");
 const { getAllTopics } = require("./controllers/topics.controllers");
 const { getApiEndpoints } = require("./controllers/api.controllers");
-const { getArticleById, getAllArticles } = require("./controllers/articles.controllers");
+const { getArticleById, getAllArticles, getCommentsByArticleId } = require("./controllers/articles.controllers");
 
 const app = express();
 
@@ -11,6 +11,7 @@ app.get("/api", getApiEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getAllArticles)
 ;
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
 
 
 // psql errors
