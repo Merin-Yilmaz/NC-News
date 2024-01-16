@@ -2,13 +2,16 @@ const express = require("express");
 const fs = require("fs/promises");
 const { getAllTopics } = require("./controllers/topics.controllers");
 const { getApiEndpoints } = require("./controllers/api.controllers");
-const { getArticleById } = require("./controllers/articles.controllers");
+const { getArticleById, getAllArticles } = require("./controllers/articles.controllers");
 
 const app = express();
 
 app.get("/api/topics", getAllTopics);
 app.get("/api", getApiEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles", getAllArticles)
+;
+
 
 // psql errors
 app.use((err, req, res, next) => {
@@ -28,7 +31,6 @@ app.use((err, req, res, next) => {
 
 // server errors
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 });
 
