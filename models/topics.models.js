@@ -1,8 +1,8 @@
 // models
-const db = require('../db/connection');
+const db = require("../db/connection");
 
 exports.fetchAllTopics = () => {
-    return db.query(`SELECT * FROM topics`).then((result) => {
-        return result.rows
-    });
+  return db.query(`SELECT * FROM topics`).then((result) => {
+    return result.rows;
+  });
 };
