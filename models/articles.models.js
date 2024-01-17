@@ -3,7 +3,12 @@ const db = require("../db/connection");
 
 exports.fetchArticleById = (article_id) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
+    .query(
+      `SELECT * 
+    FROM articles 
+    WHERE article_id = $1;`,
+      [article_id]
+    )
     .then(({ rows }) => {
       const article = rows[0];
       if (!article) {
@@ -31,14 +36,52 @@ exports.fetchAllArticles = (sort_by = "created_at") => {
   });
 };
 
-exports.fetchCommentsByArticleId = (article_id) => {
-    return db
-    .query(`SELECT * FROM comments 
-    WHERE comments.article_id = $1
-    ORDER BY created_at ASC`, [
-        article_id,
-    ])
-    .then((result) => {
-      return result.rows;
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query(
+      `
+    SELECT *
+    FROM articles
+    WHERE article_id = $1`,
+      [article_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article not found" });
+      }
+      return true;
     });
 };
+
+exports.fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      `SELECT * FROM comments 
+    WHERE comments.article_id = $1
+    ORDER BY created_at ASC`,
+      [article_id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
+exports.insertComment = (article_id, newComment) => {
+  const { username, body } = newComment;
+
+  return db
+    .query(`
+    INSERT INTO comments (body, article_id, author)
+    VALUES (
+        $1,
+        (SELECT article_id FROM articles WHERE article_id = $2),
+        (SELECT username FROM users WHERE username = $3)
+    )
+    RETURNING *;`, [body, article_id, username])
+      .then(({ rows }) => {
+        return rows[0]
+      })
+      .catch(() => {
+        return Promise.reject({ status: 400, msg: "Bad request"})
+      })
+  };

@@ -2,16 +2,18 @@ const express = require("express");
 const fs = require("fs/promises");
 const { getAllTopics } = require("./controllers/topics.controllers");
 const { getApiEndpoints } = require("./controllers/api.controllers");
-const { getArticleById, getAllArticles, getCommentsByArticleId } = require("./controllers/articles.controllers");
+const { getArticleById, getAllArticles, getCommentsByArticleId, postComment } = require("./controllers/articles.controllers");
 
 const app = express();
+app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
 app.get("/api", getApiEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
-app.get("/api/articles", getAllArticles)
-;
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
+app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postComment)
 
 
 // psql errors
@@ -27,7 +29,9 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
-  } else next(err);
+  } else {
+    next(err);
+  }
 });
 
 // server errors

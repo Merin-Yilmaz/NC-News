@@ -2,7 +2,12 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../db/connection");
 const endpointsFile = require("../endpoints.json");
+const seed = require("../db/seeds/seed");
+const data = require("../db/data/test-data");
 
+beforeEach(() => {
+  return seed(data);
+});
 afterAll(() => {
   return db.end();
 });
@@ -141,10 +146,110 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
   test("2. GET: 200 comments should be sorted by date in ascending order", () => {
     return request(app)
-      .get("/api/articles/1/comments")
+      .get("/api/articles/2/comments")
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("3. GET: 200 should respond with an empty array if article id exists but there are no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  test("4. GET: 404 responds with an error message when given a non-existent article ID", () => {
+    return request(app)
+      .get("/api/articles/888/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+  test("5. GET: 400 responds with an error message when given a non numeric ID", () => {
+    return request(app)
+      .get("/api/articles/banana/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+// 6. POST /api/articles/:article_id/comments
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("1. POST: 201 should add a comment with a username for a given article_id with the correct object properties", () => {
+    const commentToAdd = {
+      username: "rogersop",
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(commentToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.insertedComment).toMatchObject({
+          comment_id: 19,
+          body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          votes: 0,
+          author: "rogersop",
+          article_id: 5,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("2. POST: 400 responds with an error message when posting missing properties", () => {
+    const commentToAdd = {
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(commentToAdd)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("3. POST: 400 responds with an error message when username doesn't exist", () => {
+    const commentToAdd = {
+      username: "chuckles",
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(commentToAdd)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("4. POST: 400 responds with an error message when given a non-numeric ID for article_id", () => {
+    const commentToAdd = {
+      username: "chuckles",
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    };
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send(commentToAdd)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("5. POST: 404 responds with an error message when given a non-existent ID for article_id", () => {
+    const commentToAdd = {
+      username: "chuckles",
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    };
+    return request(app)
+      .post("/api/articles/888/comments")
+      .send(commentToAdd)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
       });
   });
 });

@@ -60,5 +60,17 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a new comment for given article_id with new comment_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      "votes": 0,
+      "author": "rogersop",
+      "article_id": 5,
+      "created_at": "expect.any(String)"
+    }
   }
 }
