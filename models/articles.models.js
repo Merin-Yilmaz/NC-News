@@ -80,7 +80,7 @@ exports.checkUserExists = (username) => {
         return Promise.reject({ status: 404, msg: "Username not found" });
       }
       return true;
-    })
+    });
 };
 
 exports.insertComment = (article_id, newComment) => {
@@ -118,5 +118,41 @@ exports.updateVotes = (article_id, inc_votes) => {
     )
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.checkCommentExists = (comment_id) => {
+  return db
+    .query(
+      `
+      SELECT *
+      FROM comments
+      WHERE comment_id = $1`,
+      [comment_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Comment not found" });
+      }
+      return true;
+    });
+};
+
+exports.deleteCommentById = (comment_id) => {
+  return db
+    .query(
+      `
+    DELETE FROM comments
+    WHERE comment_id = $1;`,
+      [comment_id]
+    )
+    .then(() => {
+      return "204 No Content";
+    })
+    .catch(() => {
+      return Promise.reject({ status: 404, msg: "Comment not found" });
+    })
+    .catch(() => {
+      return Promise.reject({ status: 400, msg: "Bad request" });
     });
 };
