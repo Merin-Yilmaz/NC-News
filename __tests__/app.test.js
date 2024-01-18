@@ -73,7 +73,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("No article found");
       });
   });
-  test("2. GET: 400 responds with an error message when given a non numeric ID", () => {
+  test("3. GET: 400 responds with an error message when given a non numeric ID", () => {
     return request(app)
       .get("/api/articles/banana")
       .expect(400)
@@ -191,7 +191,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(commentToAdd)
       .expect(201)
       .then(({ body }) => {
-        expect(body.insertedComment).toMatchObject({
+        expect(body.comment).toMatchObject({
           comment_id: 19,
           body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
           votes: 0,
@@ -201,9 +201,30 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("2. POST: 400 responds with an error message when posting missing properties", () => {
+  test("2. POST: 201 should not add anything else other than username and comment", () => {
     const commentToAdd = {
+      username: "rogersop",
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      something: "else",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(commentToAdd)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 19,
+          body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          votes: 0,
+          author: "rogersop",
+          article_id: 5,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("3. POST: 400 responds with an error message when posting missing properties", () => {
+    const commentToAdd = {
+      username: "butter_bridge",
     };
     return request(app)
       .post("/api/articles/5/comments")
@@ -213,22 +234,22 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("3. POST: 400 responds with an error message when username doesn't exist", () => {
+  test("4. POST: 404 responds with an error message when username doesn't exist", () => {
     const commentToAdd = {
       username: "chuckles",
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
     };
     return request(app)
-      .post("/api/articles/5/comments")
+      .post("/api/articles/2/comments")
       .send(commentToAdd)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Username not found");
       });
   });
-  test("4. POST: 400 responds with an error message when given a non-numeric ID for article_id", () => {
+  test("5. POST: 400 responds with an error message when given a non-numeric ID for article_id", () => {
     const commentToAdd = {
-      username: "chuckles",
+      username: "rogersop",
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
     };
     return request(app)
@@ -239,9 +260,9 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("5. POST: 404 responds with an error message when given a non-existent ID for article_id", () => {
+  test("6. POST: 404 responds with an error message when given a non-existent ID for article_id", () => {
     const commentToAdd = {
-      username: "chuckles",
+      username: "rogersop",
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
     };
     return request(app)
@@ -250,6 +271,79 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Article not found");
+      });
+  });
+});
+
+// 7. PATCH /api/articles/:article_id
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("1. PATCH: 200 increments number of votes in article specified by given ID", () => {
+    const votesToUpdate = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(votesToUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.votes).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("2. PATCH: 200 decrements number of votes in article specified by given ID", () => {
+    const votesToUpdate = {
+      inc_votes: -5,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(votesToUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.votes).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 95,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("2. PATCH: 404 responds with an error message when given a non-existent article ID", () => {
+    const votesToUpdate = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/888")
+      .send(votesToUpdate)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+  test("3. PATCH: 400 responds with an error message when given a non numeric ID", () => {
+    const votesToUpdate = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/banana")
+      .send(votesToUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
