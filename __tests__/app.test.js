@@ -445,6 +445,5 @@ describe("GET /api/users", () => {
   });
 });
 
-// 10. GET /api/articles (topic query)
 
 
