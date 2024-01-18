@@ -9,7 +9,8 @@ const {
   checkUserExists,
   updateVotes,
   deleteCommentById,
-  checkCommentExists,fetchAllUsers
+  checkCommentExists,
+  fetchAllUsers,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -23,7 +24,9 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  fetchAllArticles()
+  const { sort_by, order } = req.query;
+
+  fetchAllArticles(sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -96,11 +99,11 @@ exports.deleteComment = (req, res, next) => {
 };
 
 exports.getAllUsers = (req, res, next) => {
-    fetchAllUsers()
-      .then((users) => {
-        res.status(200).send({ users });
-      })
-      .catch((err) => {
-        next(err);
-      });
-  };
+  fetchAllUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
