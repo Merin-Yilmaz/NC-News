@@ -54,7 +54,7 @@ describe("GET /api", () => {
 // 3. GET /api/articles/:article_id
 
 describe("GET /api/articles/:article_id", () => {
-  test("1. GET: 200 sends an article object by its id with the correct properties", () => {
+  test("1. GET: 200 sends an article object by its id with the correct properties including comment count", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -70,6 +70,7 @@ describe("GET /api/articles/:article_id", () => {
           votes: 100,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "11",
         });
       });
   });
@@ -138,6 +139,24 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("not found");
       });
+  });
+  describe("Query - GET /api/articles", () => {
+    test("1. GET: 200 the articles should be sorted by given topic query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted("topic");
+        });
+    });
+    test("2. GET: 400 responds with error message when given an invalid sort_by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topiC")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid query");
+        });
+    });
   });
 });
 
@@ -428,21 +447,4 @@ describe("GET /api/users", () => {
 
 // 10. GET /api/articles (topic query)
 
-describe("Query - GET /api/articles", () => {
-  test("1. GET: 200 the articles should be sorted by given topic query", () => {
-    return request(app)
-      .get("/api/articles?sort_by=topic&order=asc")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles).toBeSorted("topic", { ascending: true });
-      });
-  });
-  test("2. GET: 400 responds with error message when given an invalid sort_by query", () => {
-    return request(app)
-      .get("/api/articles?sort_by=topiC")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid query");
-      });
-  });
-});
+
