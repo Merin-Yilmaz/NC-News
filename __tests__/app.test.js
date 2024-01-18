@@ -347,3 +347,27 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+// 8. CORE: DELETE /api/comments/:comment_id
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("1. DELETE: 204 should remove the specific given comment by its ID and sends no body back", () => {
+    return request(app).delete("/api/comments/3").expect(204);
+  });
+  test("2. DELETE: 404 responds with error message when given a non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
+  test("3. DELETE: 400 responds with error message when given a non-numeric comment_id", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});

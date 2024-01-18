@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs/promises");
 const { getAllTopics } = require("./controllers/topics.controllers");
 const { getApiEndpoints } = require("./controllers/api.controllers");
-const { getArticleById, getAllArticles, getCommentsByArticleId, postComment, patchVotes } = require("./controllers/articles.controllers");
+const { getArticleById, getAllArticles, getCommentsByArticleId, postComment, patchVotes, deleteComment } = require("./controllers/articles.controllers");
 
 const app = express();
 app.use(express.json());
@@ -14,8 +14,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postComment);
-
 app.patch("/api/articles/:article_id", patchVotes);
+app.delete("/api/comments/:comment_id", deleteComment);
 
 
 // psql errors
@@ -29,8 +29,7 @@ app.use((err, req, res, next) => {
 
 app.all('*', (req, res) => {
     res.status(404).send({ msg: "not found"});
-})
-
+});
 
 // promise rejection in models
 app.use((err, req, res, next) => {

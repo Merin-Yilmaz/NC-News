@@ -8,6 +8,8 @@ const {
   insertComment,
   checkUserExists,
   updateVotes,
+  deleteCommentById,
+  checkCommentExists,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -73,6 +75,20 @@ exports.patchVotes = (req, res, next) => {
   Promise.all(patchPromises)
     .then((votes) => {
       res.status(200).send({ votes: votes[0][0] });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  const commentExist = checkCommentExists(comment_id);
+  const deleteComment = deleteCommentById(comment_id);
+
+  Promise.all([commentExist, deleteComment])
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);
