@@ -403,26 +403,46 @@ describe("DELETE /api/comments/:comment_id", () => {
 // 9. GET /api/users
 
 describe("GET /api/users", () => {
-    test("1. GET: 200 returns an array of user objects with the correct properties", () => {
-      return request(app)
-        .get("/api/users")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.users).toBeInstanceOf(Array);
-          expect(response.body.users).toHaveLength(4);
-          response.body.users.forEach((user) => {
-            expect(typeof user.username).toBe("string");
-            expect(typeof user.name).toBe("string");
-            expect(typeof user.avatar_url).toBe("string");
-          });
+  test("1. GET: 200 returns an array of user objects with the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users).toHaveLength(4);
+        response.body.users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
         });
-    });
-    test("2. GET: 404 responds with an error message when given a non-existent file path", () => {
-        return request(app)
-          .get("/api/notARoute")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toBe("not found");
-          });
       });
   });
+  test("2. GET: 404 responds with an error message when given a non-existent file path", () => {
+    return request(app)
+      .get("/api/notARoute")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+});
+
+// 10. GET /api/articles (topic query)
+
+describe("Query - GET /api/articles", () => {
+  test("1. GET: 200 the articles should be sorted by given topic query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted("topic", { ascending: true });
+      });
+  });
+  test("2. GET: 400 responds with error message when given an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topiC")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid query");
+      });
+  });
+});

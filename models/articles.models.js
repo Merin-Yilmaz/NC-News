@@ -21,7 +21,7 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchAllArticles = (sort_by = "created_at") => {
+exports.fetchAllArticles = (sort_by = "created_at", order = "desc") => {
   let queryStr = `SELECT articles.article_id, articles.title,
     articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, CAST(count(comments.comment_id) AS INTEGER)
     AS comment_count FROM articles 
@@ -29,7 +29,16 @@ exports.fetchAllArticles = (sort_by = "created_at") => {
     ON articles.article_id=comments.article_id 
     GROUP BY articles.article_id`;
 
-  queryStr += ` ORDER BY ${sort_by} DESC`;
+  const validSortQueries = ["created_at", "topic"];
+  const validOrderQueries = /\b(?:asc|desc)\b/i;
+  console.log("HERE");
+
+  if (!validSortQueries.includes(sort_by) || !validOrderQueries.test(order)) {
+    console.log("HERE");
+    return Promise.reject({ status: 400, msg: "Invalid query" });
+  }
+
+  queryStr += ` ORDER BY ${sort_by} ${order}`;
 
   return db.query(queryStr).then(({ rows }) => {
     return rows;
@@ -120,8 +129,8 @@ exports.updateVotes = (article_id, inc_votes) => {
       return rows;
     })
     .catch(() => {
-        return Promise.reject({ status: 400, msg: "Bad request" });
-      });
+      return Promise.reject({ status: 400, msg: "Bad request" });
+    });
 };
 
 exports.checkCommentExists = (comment_id) => {
@@ -138,7 +147,7 @@ exports.checkCommentExists = (comment_id) => {
         return Promise.reject({ status: 404, msg: "Comment not found" });
       }
       return true;
-    })
+    });
 };
 
 exports.deleteCommentById = (comment_id) => {
@@ -161,10 +170,12 @@ exports.deleteCommentById = (comment_id) => {
 };
 
 exports.fetchAllUsers = () => {
-    return db
-    .query(`
-    SELECT * FROM users`)
+  return db
+    .query(
+      `
+    SELECT * FROM users`
+    )
     .then(({ rows }) => {
-        return rows
-    })
-}
+      return rows;
+    });
+};
