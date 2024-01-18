@@ -9,7 +9,7 @@ const {
   checkUserExists,
   updateVotes,
   deleteCommentById,
-  checkCommentExists,
+  checkCommentExists,fetchAllUsers
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -94,3 +94,13 @@ exports.deleteComment = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getAllUsers = (req, res, next) => {
+    fetchAllUsers()
+      .then((users) => {
+        res.status(200).send({ users });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  };

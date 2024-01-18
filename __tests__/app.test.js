@@ -28,6 +28,14 @@ describe("GET /api/topics", () => {
         });
       });
   });
+  test("2. GET: 404 responds with an error message when given a non-existent file path", () => {
+    return request(app)
+      .get("/api/notARoute")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
 });
 
 // // 2. GET /api
@@ -121,6 +129,14 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("4. GET: 404 responds with an error message when given a non-existent file path", () => {
+    return request(app)
+      .get("/api/notARoute")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
       });
   });
 });
@@ -346,9 +362,21 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+  test("4. PATCH: 400 responds with an error message when given a non numeric inc_votes", () => {
+    const votesToUpdate = {
+      inc_votes: NaN,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(votesToUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
-// 8. CORE: DELETE /api/comments/:comment_id
+// 8. DELETE /api/comments/:comment_id
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("1. DELETE: 204 should remove the specific given comment by its ID and sends no body back", () => {
@@ -371,3 +399,30 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+// 9. GET /api/users
+
+describe("GET /api/users", () => {
+    test("1. GET: 200 returns an array of user objects with the correct properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.users).toBeInstanceOf(Array);
+          expect(response.body.users).toHaveLength(4);
+          response.body.users.forEach((user) => {
+            expect(typeof user.username).toBe("string");
+            expect(typeof user.name).toBe("string");
+            expect(typeof user.avatar_url).toBe("string");
+          });
+        });
+    });
+    test("2. GET: 404 responds with an error message when given a non-existent file path", () => {
+        return request(app)
+          .get("/api/notARoute")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("not found");
+          });
+      });
+  });

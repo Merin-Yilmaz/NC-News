@@ -118,7 +118,10 @@ exports.updateVotes = (article_id, inc_votes) => {
     )
     .then(({ rows }) => {
       return rows;
-    });
+    })
+    .catch(() => {
+        return Promise.reject({ status: 400, msg: "Bad request" });
+      });
 };
 
 exports.checkCommentExists = (comment_id) => {
@@ -135,7 +138,7 @@ exports.checkCommentExists = (comment_id) => {
         return Promise.reject({ status: 404, msg: "Comment not found" });
       }
       return true;
-    });
+    })
 };
 
 exports.deleteCommentById = (comment_id) => {
@@ -156,3 +159,12 @@ exports.deleteCommentById = (comment_id) => {
       return Promise.reject({ status: 400, msg: "Bad request" });
     });
 };
+
+exports.fetchAllUsers = () => {
+    return db
+    .query(`
+    SELECT * FROM users`)
+    .then(({ rows }) => {
+        return rows
+    })
+}
