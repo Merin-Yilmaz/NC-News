@@ -322,7 +322,7 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-  test("2. PATCH: 404 responds with an error message when given a non-existent article ID", () => {
+  test("2. PATCH: 404 responds with an error message when given a non-existent article ID.", () => {
     const votesToUpdate = {
       inc_votes: 1,
     };
