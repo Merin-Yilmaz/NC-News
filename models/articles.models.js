@@ -31,10 +31,9 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "desc") => {
 
   const validSortQueries = ["created_at", "topic"];
   const validOrderQueries = /\b(?:asc|desc)\b/i;
-  console.log("HERE");
+
 
   if (!validSortQueries.includes(sort_by) || !validOrderQueries.test(order)) {
-    console.log("HERE");
     return Promise.reject({ status: 400, msg: "Invalid query" });
   }
 
