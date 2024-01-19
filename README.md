@@ -1,8 +1,7 @@
 <h1 align="center">Welcome to NC News! 👋</h1>
 
-My first project! 
-This API is a social news forum site, where you are able to interact, rate content and discuss topics with others. Similar to Reddit.
-
+My first project!
+This API is a social news forum site, where you are able to interact, rate content and discuss topics with others, similarly to Reddit.
 
 ### 🏠 [Homepage](https://nc-news-api-od1r.onrender.com)
 
@@ -11,13 +10,14 @@ This API is a social news forum site, where you are able to interact, rate conte
 In order to use this repo and run it locally, you will need to do the following:
 
 1. Clone the repo from gitHub on your local machine
+
 ```sh
 $ https://github.com/Merin-Yilmaz/NC-News.git
 ```
 
-3. Install Packages & Dependencies
-This project uses [node](http://nodejs.org) version v20.6.1, [npm](https://npmjs.com) version 9.8.1 and [postgres](https://www.postgresql.org) version 14.10 .
-Go check them out if you don't have them locally installed.
+2. Install Packages & Dependencies
+   This project uses [node](http://nodejs.org) version v20.6.1, [npm](https://npmjs.com) version 9.8.1 and [postgres](https://www.postgresql.org) version 14.10 .
+   Go check them out if you don't have them locally installed.
 
 ```sh
 $ npm install
@@ -35,8 +35,8 @@ You will need to create the necessary environment variables in the top level of 
 
 Please create 3 files:
 
-1. .env.test 
-2. .env.development 
+1. .env.test
+2. .env.development
 3. .env.production
 
 Into each, the correct database name will need to be added:
@@ -45,24 +45,20 @@ Into each, the correct database name will need to be added:
 
 PGDATABASE=nc_news_test
 
-
 2. In the .env.development file, please add:
 
 PGDATABASE=nc_news
-
 
 3. In the .env.production file, please add:
 
 DATABASE_URL=postgres://sbegdcfy:FaXeTVUCqKGpa3qQP3oki8tE4BiTcM6x@rogue.db.elephantsql.com/sbegdcfy
 
-
-Once the variables have been created, you will need to double check that these .env files are .gitignored. 
-If not, add them to the .gitignored file by writing under 
-node_modules: 
-.env.development 
+Once the variables have been created, you will need to double check that these .env files are .gitignored.
+If not, add them to the .gitignored file by writing under
+node_modules:
+.env.development
 .env.test
 .env.production
-
 
 ## Run Project
 
@@ -74,14 +70,13 @@ $ npm run setup.dbs
 
 ## Run Tests
 
-
 ```sh
 npm run test app
 ```
 
 ## Author
 
-* Github: [@Merin-Yilmaz](https://github.com/Merin-Yilmaz)
+- Github: [@Merin-Yilmaz](https://github.com/Merin-Yilmaz)
 
 ## 🤝 Contributing
 
@@ -90,4 +85,3 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
-
