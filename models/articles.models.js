@@ -2,25 +2,23 @@
 const db = require("../db/connection");
 
 exports.fetchArticleById = (article_id) => {
-    let queryStr = `SELECT articles.*, 
+  let queryStr = `SELECT articles.*, 
     COUNT(comments.comment_id) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id 
     WHERE articles.article_id = $1
-    GROUP BY articles.article_id`
+    GROUP BY articles.article_id`;
 
-  return db
-    .query(queryStr, [article_id])
-    .then(({ rows }) => {
-      const article = rows[0];
-      if (!article) {
-        return Promise.reject({
-          status: 404,
-          msg: "No article found",
-        });
-      }
-      return article;
-    });
+  return db.query(queryStr, [article_id]).then(({ rows }) => {
+    const article = rows[0];
+    if (!article) {
+      return Promise.reject({
+        status: 404,
+        msg: "No article found",
+      });
+    }
+    return article;
+  });
 };
 
 exports.fetchAllArticles = (sort_by = "created_at", order = "desc") => {
@@ -31,9 +29,15 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "desc") => {
     ON articles.article_id=comments.article_id 
     GROUP BY articles.article_id`;
 
-  const validSortQueries = ["created_at", "topic"];
+  const validSortQueries = [
+    "created_at",
+    "topic",
+    "comment_count",
+    "title",
+    "author",
+    "votes",
+  ];
   const validOrderQueries = /\b(?:asc|desc)\b/i;
-
 
   if (!validSortQueries.includes(sort_by) || !validOrderQueries.test(order)) {
     return Promise.reject({ status: 400, msg: "Invalid query" });

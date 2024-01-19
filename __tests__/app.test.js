@@ -124,7 +124,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("3. GET: 200 articles should be sorted by date in descending order", () => {
+  test("3. GET: 200 by default, articles should be sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -149,9 +149,50 @@ describe("GET /api/articles", () => {
           expect(body.articles).toBeSorted("topic");
         });
     });
-    test("2. GET: 400 responds with error message when given an invalid sort_by query", () => {
+    test("2. GET: 200 the articles should be sorted by given comment_count query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted("comment_count");
+        });
+    });
+    test("3. GET: 200 the articles should be sorted by given title query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted("title");
+        });
+    });
+    test("4. GET: 200 the articles should be sorted by given author query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted("author");
+        });
+    });
+    test("5. GET: 200 the articles should be sorted by any given order query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSorted("title");
+          expect(body.articles).toBeSorted({ ascending: true });
+        });
+    });
+    test("6. GET: 400 responds with error message when given an invalid sort_by query", () => {
       return request(app)
         .get("/api/articles?sort_by=topiC")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid query");
+        });
+    });
+    test("7. GET: 400 tresponds with error message when given an invalid order query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=abc")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid query");
@@ -444,6 +485,3 @@ describe("GET /api/users", () => {
       });
   });
 });
-
-
-
