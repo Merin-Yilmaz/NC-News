@@ -13,7 +13,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of article objects, sorted in descending order of date",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order", "title", "comment_count"],
     "exampleResponse": {
       "articles": [
         {
