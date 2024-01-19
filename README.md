@@ -51,7 +51,7 @@ PGDATABASE=nc_news
 
 3. In the .env.production file, please add:
 
-DATABASE_URL=postgres://sbegdcfy:FaXeTVUCqKGpa3qQP3oki8tE4BiTcM6x@rogue.db.elephantsql.com/sbegdcfy
+DATABASE_URL={ your database url }
 
 Once the variables have been created, you will need to double check that these .env files are .gitignored.
 If not, add them to the .gitignored file by writing under
