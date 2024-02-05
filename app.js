@@ -1,12 +1,13 @@
 const express = require("express");
 const fs = require("fs/promises");
 const apiRouter = require("./routers/api-router");
-
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-app.use('/', apiRouter);
+app.use("/", apiRouter);
 
 // psql errors
 app.use((err, req, res, next) => {
@@ -32,7 +33,7 @@ app.use((err, req, res, next) => {
 
 // server errors
 app.use((err, req, res, next) => {
-    console.log(err);
+  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 });
 
